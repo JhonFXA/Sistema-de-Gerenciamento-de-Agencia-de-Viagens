@@ -59,6 +59,30 @@ int removerExcursao(Excursao **lista, char nome[]){
     return 1;
 }
 
+int listarExcurssoes(Excursao **lista){
+    Excursao *aux = *lista;
+    int i=1;
+    
+    if(aux==NULL){
+        printf("\nAinda não há nenhuma excurssao cadastrada!\n\n");
+        return 0;
+    }else{
+        printf("\n  LISTA DE TODAS EXCURSOES\n");
+        while(aux!=NULL){
+            printf("\n >> Excursao %d << \n", i);
+            printf("Grupo: %s\n", aux->nomeDoGrupo);
+            printf("Data: %s\n", aux->data);
+            printf("Numero de dias: %d\n",aux->numeroDeDias);
+            printf("Destino: %s\n", aux->destino);
+            printf("Numero de turistas: %d\n", aux->quantDeTuristas);
+            printf("\n==============================\n");
+            i++;
+            aux = aux->proximo;
+            return 1;
+        }
+    }
+}
+
 
 int main(){
     Excursao *lista = NULL;
@@ -80,7 +104,7 @@ int main(){
 
         switch (escolha){
             case 1:
-                
+
                 break;
             case 2:
 
@@ -92,6 +116,7 @@ int main(){
 
                 break;
             case 5:
+               
                 break;
             default:
                 system("cls");
