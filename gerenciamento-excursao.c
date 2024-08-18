@@ -18,17 +18,15 @@ typedef struct excursao {
     struct excursao *proximo;
 } Excursao;
 
-int criarExcursao(Excursao **lista, char nome[], char data[], int dias, char destino[], int quant){
+int criarExcursao(Excursao **lista, char nome[], char data[], int dias, char destino[]){
     Excursao *novaExcursao = (Excursao *) malloc(sizeof(Excursao));
-    if(!novaExcursao){
-        printf("Nao foi possivel alocar memoria para a excursao\n\n");
+    if(!novaExcursao)
         return 0;
-    }
     strcpy(novaExcursao->nomeDoGrupo, nome);
     strcpy(novaExcursao->data, data);
     novaExcursao->numeroDeDias = dias;
     strcpy(novaExcursao->destino, destino);
-    novaExcursao->quantDeTuristas = quant;
+    novaExcursao->quantDeTuristas = 0;
     novaExcursao->turistas = NULL;
     novaExcursao->proximo = *lista;
     *lista = novaExcursao;
@@ -45,7 +43,6 @@ int removerExcursao(Excursao **lista, char nome[]){
     }
 
     if(aux == NULL){
-        printf("A excursao nao foi encontrada.\n\n");
         return 0;
     }
 
@@ -59,20 +56,20 @@ int removerExcursao(Excursao **lista, char nome[]){
     return 1;
 }
 
-int inserirTurista(Excursao **listaExcursao,char nomeExcursao[],char nomeTurista[],char cpf[]){
+int inserirTurista(Excursao **listaExcursao, char nomeExcursao[], char nomeTurista[], char cpf[]){
     Excursao *aux = *listaExcursao;
 
     while (aux != NULL && strcmp(aux->nomeDoGrupo,nomeExcursao) != 0){
         aux = aux -> proximo;
     }
     if (aux == NULL){
-        printf("Esta excursao nao foi Encontrada\n");
+        printf("Esta excursao nao foi encontrada.\n");
         return 0;
     }
     Turista *novoTurista = (Turista*)malloc(sizeof(Turista));
 
     if (novoTurista == NULL){
-        printf("Memoria nao Alocada\n");
+        printf("Memoria nao alocada.\n");
         return 0;
     }
     strcpy(novoTurista -> nome,nomeTurista);
@@ -80,18 +77,40 @@ int inserirTurista(Excursao **listaExcursao,char nomeExcursao[],char nomeTurista
     novoTurista -> proximo = aux -> turistas;
     aux -> turistas = novoTurista;
     return 1;
-
 }
 
-int listarExcurssoes(Excursao **lista){
+int removerTurista(Excursao **lista, char cpf[]){
+    Excursao *aux = *lista;
+    while(aux != NULL){
+        Turista *anterior = NULL;
+        while(aux->turistas != NULL){
+            if(strcmp(aux->turistas->cpf, cpf) == 0){
+                if(anterior == NULL){
+                    aux->turistas = aux->turistas->proximo;
+                } else {
+                    anterior->proximo = aux->turistas->proximo;
+                }
+                free(aux->turistas);
+                return 1;
+            }
+            anterior = aux->turistas;
+            aux->turistas = aux->turistas->proximo;
+        }
+        aux = aux->proximo;
+    }
+    printf("Nao existe turista com este CPF.\n");
+    return 0;
+}
+
+int listarExcursoes(Excursao **lista){
     Excursao *aux = *lista;
     int i=1;
     
     if(aux==NULL){
-        printf("\nAinda não há nenhuma excurssao cadastrada!\n\n");
+        printf("\nAinda nao ha excursoes cadastradas!\n\n");
         return 0;
     }else{
-        printf("\n  LISTA DE TODAS EXCURSOES\n");
+        printf("\n  LISTA DE TODAS AS EXCURSOES\n");
         while(aux!=NULL){
             printf("\n >> Excursao %d << \n", i);
             printf("Grupo: %s\n", aux->nomeDoGrupo);
@@ -102,9 +121,9 @@ int listarExcurssoes(Excursao **lista){
             printf("\n==============================\n");
             i++;
             aux = aux->proximo;
-            return 1;
         }
     }
+    return 1;
 }
 
 int listarQtdTurista(Excursao **lista,char nomeExcursao[]){
@@ -113,7 +132,7 @@ int listarQtdTurista(Excursao **lista,char nomeExcursao[]){
     int i=1;
     
     if(aux==NULL){
-        printf("\nAinda não há nenhuma excurssao cadastrada!\n\n");
+        printf("\nAinda nao ha excursoes cadastradas!\n\n");
         return 0;
     }else{
         while(aux != NULL && strcmp(aux->nomeDoGrupo,nomeExcursao) != 0){
@@ -122,6 +141,7 @@ int listarQtdTurista(Excursao **lista,char nomeExcursao[]){
         }
         if (aux == NULL){
             printf("\n Excursao nao encontrada \n");
+            return 0;
         }else{
             printf("\n >> Excursao %d << \n", i);
             printf("Grupo: %s\n", aux->nomeDoGrupo);
@@ -133,13 +153,13 @@ int listarQtdTurista(Excursao **lista,char nomeExcursao[]){
             printf("\nLISTA DE TURISTAS:\n");
             while (aux -> turistas != NULL){
                 contador++;
-                printf("%s \n",aux -> turistas -> nome);
+                printf("Nome: %s\nCPF: %s\n\n",aux->turistas->nome, aux->turistas->cpf);
                 aux -> turistas = aux -> turistas -> proximo;
             }
-            printf("Numero de turistas Inscritos nesta excursao: %d\n", contador);
+            printf("Numero de turistas inscritos nesta excursao: %d\n", contador);
         }
-        
     }
+    return 1;
 }
 
 
@@ -148,7 +168,6 @@ int main(){
     int escolha;
 
     do{
-        system("cls");
         printf(">> MENU <<\n\n");
         printf("1 - Criar Excursao\n");
         printf("2 - Remover Excursao\n");
@@ -161,13 +180,58 @@ int main(){
         printf("input: ");
         scanf("%d", &escolha);
 
+        printf("\n\n");
+
         switch (escolha){
-            case 1:
-
+            case 1: {
+                char nome[100], data[11], destino[100];
+                int dias;
+                
+                printf("Insira o nome do grupo: ");
+                getchar();
+                fgets(nome, sizeof(nome), stdin);
+                nome[strcspn(nome, "\n")] = '\0';
+                
+                printf("\nInsira a data da excursao (formato DD/MM/AAAA): ");
+                fgets(data, sizeof(data), stdin);
+                data[strcspn(data, "\n")] = '\0';
+                
+                printf("\nInsira o destino da excursao: ");
+                getchar();
+                fgets(destino, sizeof(destino), stdin);
+                destino[strcspn(destino, "\n")] = '\0';
+                
+                printf("\nInsira a quantidade de dias da excursao: ");
+                scanf("%d", &dias);
+                getchar();
+                
+                int result = criarExcursao(&lista, nome, data, dias, destino);
+                
+                if (result == 0) {
+                    printf("\n\nNao foi possivel alocar memoria para a excursao\n\n");
+                } else {
+                    printf("\n\nA excursao foi criada com sucesso!\n\n");
+                }
                 break;
-            case 2:
+            }
+            case 2: {
+                if(lista == NULL){
+                    printf("Nao ha excursoes para remover.\n\n");
+                } else {
+                    char nome[100];
 
+                    printf("Insira o nome do grupo: ");
+                    getchar();
+                    fgets(nome, sizeof(nome), stdin);
+                    nome[strcspn(nome, "\n")] = '\0';
+                    int result = removerExcursao(&lista, nome);
+                    if(result == 0)
+                        printf("\nA excursao nao foi encontrada.\n\n");
+                    else
+                        printf("\nA excursao foi removida com sucesso!\n\n");
+                }
                 break;
+            }
             case 3:
 
                 break;
@@ -175,15 +239,11 @@ int main(){
 
                 break;
             case 5:
-                system("pause");
                 break;
             case 6:
-                system("pause");
                 break;
             default:
-                system("cls");
                 printf("Opcao invalida.\n\n");
-                system("pause");
         }
         
     }while(escolha != 7);
