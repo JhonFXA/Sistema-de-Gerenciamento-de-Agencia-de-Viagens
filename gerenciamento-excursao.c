@@ -235,9 +235,31 @@ int main(){
             case 3:
 
                 break;
-            case 4:
+            case 4: {
+                if (lista == NULL){
+                    printf("Não ha excursoes para remover turistas");    
+                
+                } else {
+                    char nomeExcursao[100], cpf[15];
 
+                    printf("Insira o nome da excursao: ");
+                    getchar();
+                    fgets(nomeExcursao, sizeof(nomeExcursao), stdin);
+                    nomeExcursao[strcspn(nomeExcursao, "\n")] = '\0';
+
+                    printf("Insirao CPF do turista: ");
+                    fgets(cpf, sizeof(cpf),stdin);
+                    cpf[strcspn(cpf), "\n"] = '0';
+
+                    int result = removerTurista(&lista, nomeExcursao, cpf);
+
+                    if (result == 0)
+                        printf("Nao foi possivel remover o turista \n\n");
+                }
                 break;
+            }
+
+                
             case 5:
                 break;
             case 6:
