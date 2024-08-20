@@ -2,6 +2,15 @@
 #include <stdlib.h>
 #include <string.h>
 
+
+//ALUNOS:
+//Davi de Almeida Cunha
+//Igor Seara de Araújo
+//Jonathan Henrique Santos Bispo
+//Rodrigo Santos Nogueira
+//Wendell Yan dos Santos Silva
+
+
 typedef struct turista {
     char nome[100];
     char cpf[15];
